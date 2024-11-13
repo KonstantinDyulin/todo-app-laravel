@@ -2,14 +2,15 @@
 
 namespace App\Services\Auth;
 
-use App\DTO\Auth\LoginDTO;
-use App\DTO\Auth\RegisterDTO;
+use App\Data\DTO\LoginInputData;
+use App\Data\DTO\LoginOutputData;
+use App\Data\DTO\RegisterInputData;
+use App\Data\DTO\RegisterOutputData;
 
 interface IAuthService
 {
     public function getUser();
-    public function register(RegisterDTO $registerDTO);
-    public function login(LoginDTO $loginDTO);
+    public function register(RegisterInputData $registerDTO): RegisterOutputData;
+    public function login(LoginInputData $loginData): LoginOutputData;
     public function logout();
-
 }
