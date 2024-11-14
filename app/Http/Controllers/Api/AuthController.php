@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Data\DTO\LoginInputData;
-use App\Data\DTO\RegisterInputData;
-use App\Http\Resources\UserResource;
-use Exception;
-use App\Services\Auth\IAuthService;
+use App\Data\Requests\Auth\LoginRequestData;
+use App\Data\Requests\Auth\RegisterRequestData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Requests\Api\RegisterRequest;
-use Illuminate\Routing\Controllers\Middleware;
+use App\Http\Resources\UserResource;
+use App\Services\Auth\IAuthService;
+use Exception;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 class AuthController extends Controller implements HasMiddleware
 {
@@ -41,26 +41,20 @@ class AuthController extends Controller implements HasMiddleware
         ]);
     }
 
-    public function register(RegisterRequest $request)
+    public function register(RegisterRequestData $registerRequestData)
     {
-        $registerData = new RegisterInputData(...$request->validated());
-
-        $registeredUser = $this->authService->register($registerData);
+        $registeredUser = $this->authService->register($registerRequestData);
 
         return response()->json([
             'message' => 'Registration successful.',
-            'data' => [
-                'user' => $registeredUser->user
-            ]
+            'data' => $registeredUser->toArray()
         ]);
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequestData $loginRequestData)
     {
-        $loginData = new LoginInputData(...$request->validated());
-
         try {
-            $userWithToken = $this->authService->login($loginData);
+            $userWithToken = $this->authService->login($loginRequestData);
         } catch (Exception $exception) {
             return response()->json([
                 'message' => $exception->getMessage()
@@ -69,15 +63,17 @@ class AuthController extends Controller implements HasMiddleware
 
         return response()->json([
             'message' => 'Login successful.',
-            'data' => [
-                'user' =>  $userWithToken->user,
-                'token' => $userWithToken->token
-            ]
+            'data' => $userWithToken->toArray()
         ]);
     }
 
     public function logout()
     {
         $this->authService->logout();
+
+        return response()->json([
+            'message' => 'Logout successful.',
+            'data' => null
+        ], 200);
     }
 }
