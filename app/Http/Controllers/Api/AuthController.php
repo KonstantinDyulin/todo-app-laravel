@@ -72,6 +72,6 @@ class AuthController extends Controller implements HasMiddleware
         return response()->json([
             'message' => 'Logout successful.',
             'data' => null
-        ], 200);
+        ]);
     }
 }
