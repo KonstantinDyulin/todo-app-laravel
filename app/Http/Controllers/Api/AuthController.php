@@ -35,9 +35,7 @@ class AuthController extends Controller implements HasMiddleware
 
         return response()->json([
             'message' => 'Current authenticated user.',
-            'data' => [
-                'user' => $user
-            ]
+            'data' => $user->toArray()
         ]);
     }
 
